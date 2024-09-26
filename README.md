@@ -12,7 +12,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.12.0/swagger-ui-bundle.js"></script>
   <script>
     const ui = SwaggerUIBundle({
-      url: 'ruta-a-tu-swagger.yaml',  // Aquí se indica la ruta al archivo swagger
+      url: 'swagger.yaml',  // Aquí se indica la ruta al archivo swagger
       dom_id: '#swagger-ui',
     });
   </script>

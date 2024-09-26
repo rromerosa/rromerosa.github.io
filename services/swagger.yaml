@@ -1,0 +1,701 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "search-services",
+    "version": "1.0.0",
+    "description": "OpenAPI 3.0 spec for search-services",
+    "contact": {
+      "name": "Sqills Products B.V.",
+      "url": "https://www.sqills.com",
+      "email": "info@sqills.com"
+    }
+  },
+  "security": [
+    {
+      "s3_auth": []
+    }
+  ],
+  "paths": {
+    "/api/v2/orientation/search-services": {
+      "get": {
+        "summary": "Search-services GET request",
+        "operationId": "listServices",
+        "description": "Search-services GET request",
+        "parameters": [
+          {
+            "name": "service_type",
+            "description": "In a distributor-carrier setup this parameter is required to identify to which carrier the call should be routed",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "NS"
+            }
+          },
+          {
+            "name": "service_name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "SN1201"
+            }
+          },
+          {
+            "name": "secondary_service_name",
+            "description": "Filter on secondary service name of the service and any of the secondary service names on stations.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "SN12"
+            }
+          },
+          {
+            "name": "date",
+            "description": "Required in case 'travel_date' is not given. Schedule date of the requested service.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2020-10-30"
+            }
+          },
+          {
+            "name": "travel_date",
+            "description": "Required in case 'date' is not given. The departure date filter.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2020-10-30"
+            }
+          },
+          {
+            "name": "origin",
+            "description": "UIC code of the origin station. Agglomeration stations are not supported.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "84000588"
+            }
+          },
+          {
+            "name": "destination",
+            "description": "UIC code of the destination station. Agglomeration stations are not supported.",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "87271023"
+            }
+          },
+          {
+            "name": "service_identifiers",
+            "description": "Multiple service identifiers can be supplied by incrementing the value between square brackets",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "service_identifiers[0]=0%3AR%7CNS1201%7CNS%7C2020-10-30\u0026service_identifiers[1]=0%3AR%7C8557%7CYODA-C.%20RHODANIENS%7C2021-01-17"
+            }
+          },
+          {
+            "name": "page_size",
+            "description": "Optional parameter for the number of services that should be returned in the response. If the parameter is provided, it has a maximum of 100. Only available if Navigator 2.0 is used.",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "maximum": 100
+            }
+          },
+          {
+            "name": "page_after",
+            "description": "A page cursor which is used to fetch the next [page_size] results from this point. The page cursor is returned in the response. When empty, the page will start at the first item of the result set. Only available if Navigator 2.0 is used.",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Valid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "services": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "all_travel_info": {
+                                "description": "All applicable travel information messages.",
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "content": {
+                                      "type": "string",
+                                      "example": "Due to work on the tracks an additional 10 min. of traveling time is expected."
+                                    },
+                                    "title": {
+                                      "type": "string",
+                                      "example": "Work on the tracks"
+                                    }
+                                  }
+                                }
+                              },
+                              "arrival_station": {
+                                "type": "object",
+                                "properties": {
+                                  "_u_i_c_station_code": {
+                                    "type": "string",
+                                    "example": "84000588"
+                                  },
+                                  "arrival_platform": {
+                                    "type": "string",
+                                    "example": "1"
+                                  },
+                                  "arrival_timestamp": {
+                                    "description": "Only present for arrival station or via station.",
+                                    "type": "string",
+                                    "example": "2020-11-30T07:07:00+0100",
+                                    "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                  },
+                                  "connected_stations": {
+                                    "description": "Deprecated. List of the UIC code of stations to which this station can connect (based on OD pairs a.o.).",
+                                    "type": "array",
+                                    "deprecated": true,
+                                    "items": {
+                                      "type": "string",
+                                      "example": "87271023"
+                                    }
+                                  },
+                                  "departure_platform": {
+                                    "type": "string",
+                                    "example": "1"
+                                  },
+                                  "departure_timestamp": {
+                                    "description": "Only present for departure station or via station.",
+                                    "type": "string",
+                                    "example": "2020-10-30T04:46:00+0100",
+                                    "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                  },
+                                  "meta_data": {
+                                    "description": "List of the external references configured in S3",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "example": "REMOTE_CODE"
+                                        },
+                                        "value": {
+                                          "type": "string",
+                                          "example": "12345"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "Amsterdam Central"
+                                  },
+                                  "secondary_service_name": {
+                                    "description": "Secondary service name of the service at this station.",
+                                    "type": "string",
+                                    "example": "SSN5"
+                                  },
+                                  "sequence_number": {
+                                    "description": "The sequence of the station on this service. Example: if this is the second station on this service the sequence number is 2.",
+                                    "type": "integer",
+                                    "example": 2
+                                  },
+                                  "short_code": {
+                                    "type": "string",
+                                    "example": "AMS"
+                                  },
+                                  "stop_exceptions": {
+                                    "description": "List of stop exceptions which are applicable for this station.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "end_date": {
+                                          "description": "The end date of this stop exception (inclusive).",
+                                          "type": "string",
+                                          "format": "date",
+                                          "example": "2020-10-31"
+                                        },
+                                        "reason_code": {
+                                          "type": "string",
+                                          "example": "MAINTENANCE"
+                                        },
+                                        "start_date": {
+                                          "description": "The start date of this stop exception (inclusive).",
+                                          "type": "string",
+                                          "format": "date",
+                                          "example": "2020-10-30"
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "SKIP_COMPLETELY",
+                                            "DETAILS_CHANGE",
+                                            "DISABLE_BOARDING",
+                                            "DISABLE_DISEMBARKING",
+                                            "DISABLE_TRANSFER"
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "synonyms": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "example": "Adam"
+                                    }
+                                  },
+                                  "timezone": {
+                                    "type": "string",
+                                    "example": "Europe/Amsterdam"
+                                  }
+                                }
+                              },
+                              "departure_station": {
+                                "type": "object",
+                                "properties": {
+                                  "_u_i_c_station_code": {
+                                    "type": "string",
+                                    "example": "84000588"
+                                  },
+                                  "arrival_platform": {
+                                    "type": "string",
+                                    "example": "1"
+                                  },
+                                  "arrival_timestamp": {
+                                    "description": "Only present for arrival station or via station.",
+                                    "type": "string",
+                                    "example": "2020-11-30T07:07:00+0100",
+                                    "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                  },
+                                  "connected_stations": {
+                                    "description": "Deprecated. List of the UIC code of stations to which this station can connect (based on OD pairs a.o.).",
+                                    "type": "array",
+                                    "deprecated": true,
+                                    "items": {
+                                      "type": "string",
+                                      "example": "87271023"
+                                    }
+                                  },
+                                  "departure_platform": {
+                                    "type": "string",
+                                    "example": "1"
+                                  },
+                                  "departure_timestamp": {
+                                    "description": "Only present for departure station or via station.",
+                                    "type": "string",
+                                    "example": "2020-10-30T04:46:00+0100",
+                                    "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                  },
+                                  "meta_data": {
+                                    "description": "List of the external references configured in S3",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "key": {
+                                          "type": "string",
+                                          "example": "REMOTE_CODE"
+                                        },
+                                        "value": {
+                                          "type": "string",
+                                          "example": "12345"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "Amsterdam Central"
+                                  },
+                                  "secondary_service_name": {
+                                    "description": "Secondary service name of the service at this station.",
+                                    "type": "string",
+                                    "example": "SSN5"
+                                  },
+                                  "sequence_number": {
+                                    "description": "The sequence of the station on this service. Example: if this is the second station on this service the sequence number is 2.",
+                                    "type": "integer",
+                                    "example": 2
+                                  },
+                                  "short_code": {
+                                    "type": "string",
+                                    "example": "AMS"
+                                  },
+                                  "stop_exceptions": {
+                                    "description": "List of stop exceptions which are applicable for this station.",
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "end_date": {
+                                          "description": "The end date of this stop exception (inclusive).",
+                                          "type": "string",
+                                          "format": "date",
+                                          "example": "2020-10-31"
+                                        },
+                                        "reason_code": {
+                                          "type": "string",
+                                          "example": "MAINTENANCE"
+                                        },
+                                        "start_date": {
+                                          "description": "The start date of this stop exception (inclusive).",
+                                          "type": "string",
+                                          "format": "date",
+                                          "example": "2020-10-30"
+                                        },
+                                        "type": {
+                                          "type": "string",
+                                          "enum": [
+                                            "SKIP_COMPLETELY",
+                                            "DETAILS_CHANGE",
+                                            "DISABLE_BOARDING",
+                                            "DISABLE_DISEMBARKING",
+                                            "DISABLE_TRANSFER"
+                                          ]
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "synonyms": {
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "example": "Adam"
+                                    }
+                                  },
+                                  "timezone": {
+                                    "type": "string",
+                                    "example": "Europe/Amsterdam"
+                                  }
+                                }
+                              },
+                              "meta_data": {
+                                "description": "List of the external references configured in S3",
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "key": {
+                                      "type": "string",
+                                      "example": "REMOTE_CODE"
+                                    },
+                                    "value": {
+                                      "type": "string",
+                                      "example": "12345"
+                                    }
+                                  }
+                                }
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "SN1201"
+                              },
+                              "route_code": {
+                                "type": "string",
+                                "example": "AMS\u003ePAR"
+                              },
+                              "schedule_date": {
+                                "type": "string",
+                                "format": "date",
+                                "example": "2020-10-30"
+                              },
+                              "secondary_service_name": {
+                                "type": "string",
+                                "example": "SN12"
+                              },
+                              "service_exceptions": {
+                                "description": "List of service exceptions which are applicable for this service (only if 'Still display in operations' is enabled).",
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "end_date": {
+                                      "description": "The end date of this service exception (inclusive).",
+                                      "type": "string",
+                                      "format": "date",
+                                      "example": "2020-10-31"
+                                    },
+                                    "reason_code": {
+                                      "type": "string",
+                                      "example": "BLOCKED"
+                                    },
+                                    "start_date": {
+                                      "description": "The start date of this service exception (inclusive).",
+                                      "type": "string",
+                                      "format": "date",
+                                      "example": "2020-10-30"
+                                    }
+                                  }
+                                }
+                              },
+                              "service_identifier": {
+                                "description": "Given service identifier or a generated one if not given.",
+                                "type": "string"
+                              },
+                              "service_properties": {
+                                "description": "List of the enabled service properties on this service",
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "code": {
+                                      "type": "string",
+                                      "example": "WIFI"
+                                    },
+                                    "description": {
+                                      "type": "string",
+                                      "example": "Free WIFI available"
+                                    }
+                                  }
+                                }
+                              },
+                              "service_type": {
+                                "type": "object",
+                                "properties": {
+                                  "code": {
+                                    "type": "string",
+                                    "example": "NS"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "example": "Nederlandse Spoorwegen"
+                                  }
+                                }
+                              },
+                              "travel_info": {
+                                "description": "Max. 1 of the applicable travel information messages. Omitted if none.",
+                                "type": "object",
+                                "properties": {
+                                  "content": {
+                                    "type": "string",
+                                    "example": "Due to work on the tracks an additional 10 min. of traveling time is expected."
+                                  },
+                                  "title": {
+                                    "type": "string",
+                                    "example": "Work on the tracks"
+                                  }
+                                }
+                              },
+                              "via_stations": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "_u_i_c_station_code": {
+                                      "type": "string",
+                                      "example": "84000588"
+                                    },
+                                    "arrival_platform": {
+                                      "type": "string",
+                                      "example": "1"
+                                    },
+                                    "arrival_timestamp": {
+                                      "description": "Only present for arrival station or via station.",
+                                      "type": "string",
+                                      "example": "2020-11-30T07:07:00+0100",
+                                      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                    },
+                                    "connected_stations": {
+                                      "description": "Deprecated. List of the UIC code of stations to which this station can connect (based on OD pairs a.o.).",
+                                      "type": "array",
+                                      "deprecated": true,
+                                      "items": {
+                                        "type": "string",
+                                        "example": "87271023"
+                                      }
+                                    },
+                                    "departure_platform": {
+                                      "type": "string",
+                                      "example": "1"
+                                    },
+                                    "departure_timestamp": {
+                                      "description": "Only present for departure station or via station.",
+                                      "type": "string",
+                                      "example": "2020-10-30T04:46:00+0100",
+                                      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9])(\\.[0-9]+)?(Z|(\\+|-)[0-9]{2}:?[0-9]{2})$"
+                                    },
+                                    "meta_data": {
+                                      "description": "List of the external references configured in S3",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "key": {
+                                            "type": "string",
+                                            "example": "REMOTE_CODE"
+                                          },
+                                          "value": {
+                                            "type": "string",
+                                            "example": "12345"
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "name": {
+                                      "type": "string",
+                                      "example": "Amsterdam Central"
+                                    },
+                                    "secondary_service_name": {
+                                      "description": "Secondary service name of the service at this station.",
+                                      "type": "string",
+                                      "example": "SSN5"
+                                    },
+                                    "sequence_number": {
+                                      "description": "The sequence of the station on this service. Example: if this is the second station on this service the sequence number is 2.",
+                                      "type": "integer",
+                                      "example": 2
+                                    },
+                                    "short_code": {
+                                      "type": "string",
+                                      "example": "AMS"
+                                    },
+                                    "stop_exceptions": {
+                                      "description": "List of stop exceptions which are applicable for this station.",
+                                      "type": "array",
+                                      "items": {
+                                        "type": "object",
+                                        "properties": {
+                                          "end_date": {
+                                            "description": "The end date of this stop exception (inclusive).",
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2020-10-31"
+                                          },
+                                          "reason_code": {
+                                            "type": "string",
+                                            "example": "MAINTENANCE"
+                                          },
+                                          "start_date": {
+                                            "description": "The start date of this stop exception (inclusive).",
+                                            "type": "string",
+                                            "format": "date",
+                                            "example": "2020-10-30"
+                                          },
+                                          "type": {
+                                            "type": "string",
+                                            "enum": [
+                                              "SKIP_COMPLETELY",
+                                              "DETAILS_CHANGE",
+                                              "DISABLE_BOARDING",
+                                              "DISABLE_DISEMBARKING",
+                                              "DISABLE_TRANSFER"
+                                            ]
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "synonyms": {
+                                      "type": "array",
+                                      "items": {
+                                        "type": "string",
+                                        "example": "Adam"
+                                      }
+                                    },
+                                    "timezone": {
+                                      "type": "string",
+                                      "example": "Europe/Amsterdam"
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "total_count": {
+                          "description": "Indicates the total number of services that match the request. Only available if Navigator 2.0 is used.",
+                          "type": "integer",
+                          "example": 400
+                        }
+                      }
+                    },
+                    "messages": {
+                      "description": "List of any information messages to explain about the response.",
+                      "type": "array",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "next_page": {
+                      "description": "Absolute URI to retrieve the next page of entries. This url includes the paging and the query parameters given in the request. Only returned if Navigator 2.0 is used.",
+                      "type": "string",
+                      "example": "https://example.com/api/v2/orientation/search-services?service_type=ET\u0026date=2020-10-30\u0026page_size=1"
+                    },
+                    "previous_page": {
+                      "description": "Absolute URI to retrieve the previous page of entries. This url includes the paging and the query parameters given in the request. Only returned if Navigator 2.0 is used.",
+                      "type": "string",
+                      "example": "https://example.com/api/v2/orientation/search-services?service_type=ET\u0026date=2020-10-30\u0026page_size=2\u0026page_after=Y3Vyc29yX2F0OjIwIzE1ODU3MTAwMDA%3D"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request due to missing client input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "S3 Error response object",
+                  "properties": {
+                    "errors": {
+                      "description": "A list of errors which lead to the failure response.",
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "code": {
+                            "description": "An S3P-specific, human readable, error code for classification of the error.",
+                            "type": "string",
+                            "example": "non_conform_request"
+                          },
+                          "context": {
+                            "description": "More information about the error: object with key-value pairs.",
+                            "type": "object",
+                            "additionalProperties": {
+                              "type": "object"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An unexpected error has occurred"
+          },
+          "503": {
+            "description": "Service unavailable"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "s3_auth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

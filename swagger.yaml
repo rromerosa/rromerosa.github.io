@@ -1,0 +1,25 @@
+openapi: 3.0.0
+info:
+  title: Mi API
+  description: Documentación de Mi API
+  version: 1.0.0
+servers:
+  - url: https://api.miapi.com/v1
+paths:
+  /usuarios:
+    get:
+      summary: Obtener la lista de usuarios
+      responses:
+        '200':
+          description: Lista de usuarios obtenida correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    nombre:
+                      type: string
